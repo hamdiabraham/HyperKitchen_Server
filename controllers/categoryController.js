@@ -1,69 +1,50 @@
 const Category = require("../models/categoryModel");
+const catchAsync = require("../utils/catchAsync");
 
-exports.category = async (req, res) => {
-  try {
-    const category = await Category.find();
-    res.render("category/view_category", {
-      category,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
+exports.getCategory = catchAsync(async (req, res) => {
+  const category = await Category.find();
+  res.render("category/view_category", {
+    category,
+  });
+});
 
-exports.addCategory = async (req, res) => {
-  try {
-    res.render("category/create_category");
-  } catch (err) {
-    console.log(err);
-  }
-};
+exports.addCategory = catchAsync(async (req, res) => {
+  res.render("category/create_category");
+});
 
-exports.createCategory = async (req, res) => {
+exports.createCategory = catchAsync(async (req, res) => {
   try {
     const category = await Category.create(req.body);
     res.redirect("/category");
   } catch (err) {
     console.log(err);
   }
-};
+});
 
-exports.editCategory = async (req, res) => {
-  try {
-    // const category = Category.findById(req.params.id);
-    const { id } = req.params;
+exports.editCategory = catchAsync(async (req, res) => {
+  // const category = Category.findById(req.params.id);
+  const { id } = req.params;
 
-    const category = await Category.findOne({ _id: id });
+  const category = await Category.findOne({ _id: id });
 
-    res.render("category/edit", {
-      category,
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
+  res.render("category/edit", {
+    category,
+  });
+});
 
-exports.editPostCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { name } = req.body;
+exports.editPostCategory = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { name } = req.body;
 
-    await Category.findOneAndUpdate({ _id: id }, { name });
+  await Category.findOneAndUpdate({ _id: id }, { name });
 
-    res.redirect("/category");
-  } catch (err) {
-    console.log(err);
-  }
-};
+  res.redirect("/category");
+});
 
-exports.deleteCategory = async (req, res) => {
-  try {
-    const { id } = req.params;
+exports.deleteCategory = catchAsync(async (req, res) => {
+  const { id } = req.params;
 
-    await Category.findOneAndRemove({ _id: id });
+  await Category.findOneAndRemove({ _id: id });
 
-    res.redirect("/category");
-  } catch (err) {
-    console.log(err);
-  }
-};
+  res.redirect("/category");
+});

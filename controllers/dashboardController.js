@@ -1,7 +1,5 @@
-exports.dashboard = async (req, res) => {
-  try {
-    res.render("index");
-  } catch (err) {
-    console.log(err);
-  }
-};
+const catchAsync = require("../utils/catchAsync");
+
+exports.dashboard = catchAsync(async (req, res) => {
+  res.render("index");
+});

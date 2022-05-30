@@ -3,10 +3,10 @@ const path = require("path");
 const methodOverride = require("method-override");
 const app = express();
 
+const { errorHandler, notFound } = require("./middlewares/errorHandler");
 const userRouter = require("./routers/userRoute");
 const dashboardRouter = require("./routers/dashboardRoute");
 const categoryRouter = require("./routers/categoryRoute");
-const { errorHandler, notFound } = require("./middlewares/errorHandler");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
