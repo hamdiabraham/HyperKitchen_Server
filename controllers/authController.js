@@ -42,23 +42,39 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(newUser, 201, req, res);
 });
 
-exports.login = catchAsync(async (req, res, next) => {
+exports.loginPage = catchAsync(async (req, res, next) => {
+  res.render("login/loginPage", {
+    title: "Login",
+  });
+});
+
+exports.loginAdmin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // 1) check if email and password exist
   if (!email || !password) {
-    return next(new AppError("Please enter email and password", 400));
+    throw new Error("email or password is required");
   }
 
-  // 2) Check if user exist && password is correct
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email });
 
   if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Incorrect email and password!", 401)); // 401 unauthorized
+    throw new Error("Invalid email or password!!");
   }
 
-  // 3) If everything ok sent it to client
-  createSendToken(user, 200, req, res);
+  const token = signToken(user._id);
+
+  res.cookie("jwt", token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRATION * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure || req.headers["x-forwarded-proto"] === "https",
+  });
+
+  // Remove password from the output
+  user.password = undefined;
+
+  return res.redirect("/dashboard");
 });
 
 exports.logout = (req, res) => {
