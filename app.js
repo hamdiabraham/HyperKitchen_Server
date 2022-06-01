@@ -9,6 +9,7 @@ const { errorHandler, notFound } = require("./middlewares/errorHandler");
 const adminRoute = require("./routers/adminRoute");
 const dashboardRouter = require("./routers/dashboardRoute");
 const categoryRouter = require("./routers/categoryRoute");
+const tagRouter = require("./routers/tagRoute");
 
 app.set("view engine", "ejs");
 app.set("views", "views");
@@ -35,6 +36,7 @@ app.use(methodOverride("_method"));
 app.use(adminRoute);
 app.use(dashboardRouter);
 app.use(categoryRouter);
+app.use(tagRouter);
 
 app.use(errorHandler);
 app.use(notFound);

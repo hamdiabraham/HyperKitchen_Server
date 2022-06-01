@@ -5,20 +5,17 @@ exports.getCategory = catchAsync(async (req, res) => {
   const category = await Category.find();
   res.render("category/view_category", {
     category,
+    title: "Category",
   });
 });
 
 exports.addCategory = catchAsync(async (req, res) => {
-  res.render("category/create_category");
+  res.render("category/create_category", { title: "Add Category" });
 });
 
 exports.createCategory = catchAsync(async (req, res) => {
-  try {
-    const category = await Category.create(req.body);
-    res.redirect("/category");
-  } catch (err) {
-    console.log(err);
-  }
+  const category = await Category.create(req.body);
+  res.redirect("/category");
 });
 
 exports.editCategory = catchAsync(async (req, res) => {
@@ -29,6 +26,7 @@ exports.editCategory = catchAsync(async (req, res) => {
 
   res.render("category/edit", {
     category,
+    title: "Edit Category",
   });
 });
 
