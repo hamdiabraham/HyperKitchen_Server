@@ -11,10 +11,11 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies.jwt && req.cookies.jwt !== "loggedout") {
+    token = req.cookies.jwt;
   }
 
   if (!token) {
-    res.status(401);
     throw new Error("You are not logged in! Please log in to get access.");
   }
 
@@ -31,8 +32,17 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
+  res.locals.user = currentUser;
   next();
 });
+
+exports.protectAdmin = (req, res, next) => {
+  if (req.session.user === null || req.session.user === undefined) {
+    res.redirect("/");
+  } else {
+    next();
+  }
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {

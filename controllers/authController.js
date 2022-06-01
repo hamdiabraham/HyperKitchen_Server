@@ -51,6 +51,29 @@ exports.loginPage = catchAsync(async (req, res, next) => {
 exports.loginAdmin = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
+  const user = await User.findOne({ email });
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    throw new Error("Invalid email or password!!");
+  } else {
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      role: user.role,
+      name: user.name,
+    };
+
+    res.redirect("/dashboard");
+  }
+});
+
+exports.logutAdmin = (req, res, next) => {
+  req.session.destroy();
+  res.redirect("/");
+};
+
+exports.login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
   if (!email || !password) {
     throw new Error("email or password is required");
   }
@@ -74,7 +97,11 @@ exports.loginAdmin = catchAsync(async (req, res, next) => {
   // Remove password from the output
   user.password = undefined;
 
-  return res.redirect("/dashboard");
+  res.status(200).json({
+    status: "success",
+    token,
+    user,
+  });
 });
 
 exports.logout = (req, res) => {
@@ -84,5 +111,4 @@ exports.logout = (req, res) => {
   });
   res.status(200).json({ status: "success" });
   // res.redirect('/').json({ status: 'success' });
-  // res.redirect('/');
 };
